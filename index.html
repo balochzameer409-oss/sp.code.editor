@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#7c3aed">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Code Playground">
+    <meta name="application-name" content="Code Playground">
+    <meta name="description" content="Professional mobile code editor - HTML, CSS & JavaScript">
+    <title>Code Playground Pro</title>
+    <link rel="manifest" href="./manifest.json">
+    <link rel="apple-touch-icon" href="./icons/icon-192.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/show-hint.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/css/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/closetag.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/selection/active-line.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/show-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/html-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/css-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/hint/javascript-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/search/search.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/search/searchcursor.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/fold/foldcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/fold/foldgutter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/fold/brace-fold.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/fold/xml-fold.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/fold/foldgutter.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Rajdhani:wght@500;600;700&display=swap');
+
+        * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+        :root {
+            --primary: #7c3aed;
+            --primary-glow: rgba(124,58,237,0.4);
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1a1a2e;
+            --darker: #0d0d1a;
+            --card: #16213e;
+            --border: rgba(124,58,237,0.3);
+            --text: #e2e8f0;
+            --muted: #64748b;
+        }
+
+        body {
+            background: var(--darker);
+            color: var(--text);
+            font-family: 'Rajdhani', system-ui, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            touch-action: pan-y;
+        }
+
+        /* ===== SPLASH ===== */
+        .splash-screen {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: linear-gradient(135deg, #0d0d1a 0%, #1a0533 50%, #0d0d1a 100%);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 99999;
+            animation: fadeOut 0.6s ease 2.8s forwards;
+        }
+        .splash-bg {
+            position:absolute; width:100%; height:100%; overflow:hidden;
+        }
+        .splash-bg::before {
+            content:''; position:absolute; width:400px; height:400px;
+            background: radial-gradient(circle, rgba(124,58,237,0.3) 0%, transparent 70%);
+            top:50%; left:50%; transform:translate(-50%,-50%);
+            animation: pulse 2s ease infinite;
+        }
+        @keyframes pulse { 0%,100%{transform:translate(-50%,-50%) scale(1)} 50%{transform:translate(-50%,-50%) scale(1.2)} }
+        @keyframes fadeOut { to{opacity:0;visibility:hidden} }
+
+        .splash-logo {
+            width:110px; height:110px;
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            border-radius:28px;
+            display:flex; align-items:center; justify-content:center;
+            font-size:55px;
+            box-shadow: 0 0 60px rgba(124,58,237,0.6), 0 20px 40px rgba(0,0,0,0.4);
+            animation: bounceIn 0.9s cubic-bezier(0.34,1.56,0.64,1);
+            position:relative; z-index:1;
+        }
+        @keyframes bounceIn {
+            0%{transform:scale(0) rotate(-180deg);opacity:0}
+            60%{transform:scale(1.15) rotate(8deg)}
+            100%{transform:scale(1) rotate(0deg);opacity:1}
+        }
+        .splash-title { margin-top:24px; font-size:2.2rem; font-weight:700; color:white; letter-spacing:2px; position:relative; z-index:1; animation:slideUp 0.8s ease 0.3s backwards; }
+        .splash-subtitle { margin-top:6px; font-size:1rem; color:rgba(255,255,255,0.6); position:relative; z-index:1; animation:slideUp 0.8s ease 0.5s backwards; }
+        .splash-loader { margin-top:40px; display:flex; gap:8px; position:relative; z-index:1; animation:slideUp 0.8s ease 0.7s backwards; }
+        .splash-dot { width:10px; height:10px; background:var(--primary); border-radius:50%; animation:dotBounce 1.2s ease infinite; }
+        .splash-dot:nth-child(2){animation-delay:0.2s}
+        .splash-dot:nth-child(3){animation-delay:0.4s}
+        @keyframes dotBounce { 0%,80%,100%{transform:scale(0.7);opacity:0.5} 40%{transform:scale(1.2);opacity:1} }
+        .splash-version { position:absolute; bottom:24px; font-size:0.8rem; color:rgba(255,255,255,0.4); z-index:1; animation:fadeIn 1s ease 1.5s backwards; }
+        @keyframes slideUp { from{transform:translateY(25px);opacity:0} to{transform:translateY(0);opacity:1} }
+        @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+        /* ===== APP ===== */
+        .app-container { opacity:0; animation:fadeIn 0.5s ease 3s forwards; display:flex; flex-direction:column; height:100vh; }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: var(--dark);
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            align-items: center;
+            scrollbar-width: none;
+            flex-shrink: 0;
+        }
+        .header::-webkit-scrollbar { display:none; }
+        .header-title { font-size:1rem; font-weight:700; color:var(--primary); white-space:nowrap; margin-right:4px; letter-spacing:1px; flex-shrink:0; }
+
+        .btn {
+            background: var(--card);
+            color: white;
+            border: 1px solid var(--border);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            font-family: 'Rajdhani', sans-serif;
+            white-space: nowrap;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            touch-action: manipulation;
+            cursor: pointer;
+            transition: all 0.15s;
+            letter-spacing: 0.5px;
+        }
+        .btn:active { transform:scale(0.93); }
+        .btn:hover { border-color: var(--primary); background: rgba(124,58,237,0.15); }
+
+        .btn-run { background:linear-gradient(135deg,#10b981,#059669); border-color:transparent; box-shadow:0 0 15px rgba(16,185,129,0.3); }
+        .btn-run:hover { box-shadow:0 0 25px rgba(16,185,129,0.5); }
+        .btn-console { background:linear-gradient(135deg,#f59e0b,#d97706); border-color:transparent; }
+        .btn-save { background:linear-gradient(135deg,#3b82f6,#2563eb); border-color:transparent; }
+        .btn-danger { background:linear-gradient(135deg,#ef4444,#dc2626); border-color:transparent; }
+        .btn-format { background:linear-gradient(135deg,#8b5cf6,#7c3aed); border-color:transparent; }
+        .btn-copy { background:linear-gradient(135deg,#06b6d4,#0891b2); border-color:transparent; }
+        .btn-share { background:linear-gradient(135deg,#ec4899,#db2777); border-color:transparent; }
+
+        /* ===== TABS ===== */
+        .tab-bar {
+            background: var(--dark);
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .tab-item {
+            flex: 1; padding: 10px 8px;
+            background: transparent;
+            border: none;
+            color: var(--muted);
+            font-weight: 600;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.9rem;
+            display: flex; align-items:center; justify-content:center; gap:5px;
+            touch-action: manipulation; cursor:pointer;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+            letter-spacing: 0.5px;
+        }
+        .tab-item:hover { color: white; background: rgba(255,255,255,0.04); }
+        .tab-item.active { color:white; border-bottom-color:var(--primary); background:rgba(124,58,237,0.08); }
+
+        /* ===== EDITOR ===== */
+        .main-container { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+        .editor-container { flex:1; overflow:hidden; position:relative; }
+        .CodeMirror { height:100% !important; font-size:13.5px !important; font-family:'JetBrains Mono',monospace !important; line-height:1.7 !important; }
+        .CodeMirror-scroll { padding-bottom:40px; }
+        /* selection ہمیشہ نظر آئے چاہے focus ہو یا نہ ہو */
+        .CodeMirror-selected { background:rgba(124,58,237,0.35) !important; }
+        .CodeMirror-focused .CodeMirror-selected { background:rgba(124,58,237,0.45) !important; }
+
+        /* Syntax colors */
+        .cm-tag { color:#ff79c6 !important; font-weight:600 !important; }
+        .cm-attribute { color:#50fa7b !important; font-style:italic !important; }
+        .cm-string { color:#f1fa8c !important; }
+        .cm-bracket { color:#8be9fd !important; font-weight:bold !important; }
+        .cm-property { color:#8be9fd !important; }
+        .cm-atom,.cm-number { color:#bd93f9 !important; }
+        .cm-def { color:#50fa7b !important; font-weight:600 !important; }
+        .cm-keyword { color:#ff79c6 !important; font-weight:bold !important; }
+        .cm-variable { color:#f8f8f2 !important; }
+        .cm-variable-2 { color:#8be9fd !important; }
+        .cm-comment { color:#6272a4 !important; font-style:italic !important; }
+        .cm-operator { color:#ff79c6 !important; }
+        .cm-linenumber { color:#4a5568 !important; }
+        .CodeMirror-activeline-background { background:rgba(255,255,255,0.04) !important; }
+        .CodeMirror-selected { background:rgba(124,58,237,0.25) !important; }
+        .CodeMirror-cursor { border-left:2px solid #50fa7b !important; }
+        .CodeMirror-matchingbracket { color:#50fa7b !important; background:rgba(80,250,123,0.15) !important; font-weight:bold !important; }
+        .CodeMirror-hints { background:#1a1a2e !important; border:1px solid var(--primary) !important; border-radius:8px !important; box-shadow:0 8px 24px rgba(0,0,0,0.6) !important; font-family:'JetBrains Mono',monospace !important; font-size:0.82rem !important; }
+        .CodeMirror-hint { color:#f8f8f2 !important; padding:6px 12px !important; border-radius:4px !important; }
+        .CodeMirror-hint-active { background:var(--primary) !important; }
+        .CodeMirror-foldgutter-open,.CodeMirror-foldgutter-folded { color:var(--primary) !important; cursor:pointer !important; }
+
+        /* ===== STATUS BAR ===== */
+        .status-bar {
+            background: var(--dark);
+            padding: 4px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border);
+            font-size: 0.75rem;
+            color: var(--muted);
+            font-family: 'JetBrains Mono', monospace;
+            flex-shrink: 0;
+        }
+        .status-left,.status-right { display:flex; gap:14px; align-items:center; }
+        .status-item { display:flex; align-items:center; gap:4px; }
+        .status-dot { width:6px; height:6px; border-radius:50%; background:var(--secondary); }
+        .status-dot.error { background:var(--danger); }
+
+        /* ===== CONSOLE ===== */
+        .console-container {
+            background: #0f0f1a;
+            border-top: 1px solid var(--border);
+            height: 0; overflow: hidden;
+            transition: height 0.3s cubic-bezier(0.4,0,0.2,1);
+            display: flex; flex-direction: column;
+            flex-shrink: 0;
+        }
+        .console-container.open { height:35vh; }
+        .console-header {
+            background: var(--dark); padding:8px 12px;
+            display:flex; justify-content:space-between; align-items:center;
+            border-bottom:1px solid var(--border);
+        }
+        .console-header h3 { font-size:0.85rem; color:var(--accent); display:flex; align-items:center; gap:6px; font-family:'Rajdhani',sans-serif; letter-spacing:1px; }
+        .console-actions { display:flex; gap:6px; }
+        .console-btn { background:transparent; border:1px solid #333; color:var(--text); padding:4px 10px; border-radius:6px; font-size:0.75rem; cursor:pointer; display:flex;align-items:center;gap:4px;transition:all 0.15s; font-family:'Rajdhani',sans-serif; }
+        .console-btn:hover { border-color:var(--primary); color:white; }
+        .console-btn:active { transform:scale(0.95); }
+        .console-filter { display:flex; gap:4px; padding:6px 12px; border-bottom:1px solid rgba(255,255,255,0.05); background:#0f0f1a; }
+        .filter-btn { background:transparent; border:1px solid #2a2a3e; color:var(--muted); padding:3px 10px; border-radius:4px; font-size:0.72rem; cursor:pointer; font-family:'JetBrains Mono',monospace; transition:all 0.15s; }
+        .filter-btn.active { background:rgba(124,58,237,0.2); border-color:var(--primary); color:white; }
+        .console-output { flex:1; overflow-y:auto; padding:8px 12px; font-family:'JetBrains Mono',monospace; font-size:0.8rem; -webkit-overflow-scrolling:touch; }
+        .console-output::-webkit-scrollbar { width:4px; }
+        .console-output::-webkit-scrollbar-track { background:transparent; }
+        .console-output::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+        .console-line { padding:5px 8px; margin:2px 0; border-radius:4px; display:flex; gap:8px; word-break:break-word; align-items:flex-start; border-left:2px solid transparent; }
+        .console-line.log { color:#e2e8f0; border-left-color:#4a5568; }
+        .console-line.error { color:#fca5a5; background:rgba(239,68,68,0.08); border-left-color:#ef4444; }
+        .console-line.warn { color:#fde68a; background:rgba(245,158,11,0.08); border-left-color:#f59e0b; }
+        .console-line.info { color:#93c5fd; background:rgba(59,130,246,0.08); border-left-color:#3b82f6; }
+        .console-line.success { color:#86efac; background:rgba(16,185,129,0.08); border-left-color:#10b981; }
+        .console-line i { margin-top:2px; flex-shrink:0; font-size:0.75rem; }
+        .console-timestamp { color:#4a5568; font-size:0.7rem; flex-shrink:0; margin-top:2px; }
+        .console-input-row { display:flex; padding:6px 12px; border-top:1px solid rgba(255,255,255,0.05); gap:8px; align-items:center; }
+        .console-input { flex:1; background:rgba(255,255,255,0.04); border:1px solid #2a2a3e; color:white; padding:6px 10px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:0.8rem; outline:none; }
+        .console-input:focus { border-color:var(--primary); }
+        .console-run-btn { background:var(--primary); border:none; color:white; padding:6px 12px; border-radius:6px; font-size:0.75rem; cursor:pointer; font-family:'Rajdhani',sans-serif; font-weight:600; }
+
+        /* ===== PREVIEW ===== */
+        .preview-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:10000; flex-direction:column; }
+        .preview-modal.active { display:flex; }
+        .preview-header { background:var(--dark); padding:10px 14px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); gap:8px; }
+        .preview-header h2 { font-size:0.95rem; display:flex; align-items:center; gap:8px; font-family:'Rajdhani',sans-serif; color:white; }
+        .preview-controls { display:flex; gap:6px; align-items:center; flex:1; justify-content:center; }
+        .preview-size-btn { background:transparent; border:1px solid #333; color:var(--muted); padding:4px 10px; border-radius:6px; font-size:0.75rem; cursor:pointer; transition:all 0.15s; font-family:'Rajdhani',sans-serif; }
+        .preview-size-btn.active,.preview-size-btn:hover { border-color:var(--primary); color:white; background:rgba(124,58,237,0.15); }
+        .preview-wrapper { flex:1; display:flex; align-items:center; justify-content:center; background:#111; overflow:auto; padding:10px; }
+        .preview-frame { border:none; background:white; border-radius:4px; transition:all 0.3s; }
+        .preview-frame.mobile { width:375px; height:667px; border-radius:20px; box-shadow:0 0 0 8px #1a1a2e; max-width:100%; max-height:100%; }
+        .preview-frame.tablet { width:768px; height:600px; max-width:100%; max-height:100%; }
+        .preview-frame.desktop { width:100%; height:100%; }
+
+        /* ===== SEARCH/REPLACE ===== */
+        .search-bar {
+            background: var(--dark);
+            border-bottom: 1px solid var(--border);
+            padding: 8px 12px;
+            display: none;
+            gap: 8px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .search-bar.show { display:flex; }
+        .search-input { flex:1; background:rgba(255,255,255,0.06); border:1px solid #333; color:white; padding:6px 10px; border-radius:6px; font-family:'JetBrains Mono',monospace; font-size:0.82rem; outline:none; }
+        .search-input:focus { border-color:var(--primary); }
+        .search-info { font-size:0.75rem; color:var(--muted); white-space:nowrap; font-family:'JetBrains Mono',monospace; }
+
+        /* ===== MODALS ===== */
+        .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:20000; display:none; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(4px); }
+        .modal-overlay.show { display:flex; }
+        .modal { background:var(--dark); border:1px solid var(--border); border-radius:16px; padding:20px; width:100%; max-width:380px; box-shadow:0 20px 60px rgba(0,0,0,0.5); }
+        .modal h3 { font-size:1.1rem; font-weight:700; margin-bottom:14px; color:white; font-family:'Rajdhani',sans-serif; letter-spacing:1px; display:flex;align-items:center;gap:8px; }
+        .modal-body { margin-bottom:16px; }
+        .modal-actions { display:flex; gap:8px; justify-content:flex-end; }
+        .snippet-item { background:rgba(255,255,255,0.04); border:1px solid #2a2a3e; border-radius:8px; padding:10px 12px; margin-bottom:8px; cursor:pointer; transition:all 0.15s; }
+        .snippet-item:hover { border-color:var(--primary); background:rgba(124,58,237,0.1); }
+        .snippet-title { font-weight:600; color:white; font-size:0.9rem; margin-bottom:3px; }
+        .snippet-desc { color:var(--muted); font-size:0.78rem; }
+        .snippet-tag { display:inline-block; background:rgba(124,58,237,0.2); color:#a78bfa; border-radius:4px; padding:1px 6px; font-size:0.7rem; margin-right:4px; font-family:'JetBrains Mono',monospace; }
+
+        /* ===== SETTINGS PANEL ===== */
+        .settings-panel {
+            position:fixed; top:0; right:0; width:280px; height:100%;
+            background:var(--dark); border-left:1px solid var(--border);
+            z-index:15000; transform:translateX(100%);
+            transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
+            display:flex; flex-direction:column;
+            overflow-y:auto;
+        }
+        .settings-panel.open { transform:translateX(0); }
+        .settings-header { padding:16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+        .settings-header h3 { font-size:1rem; font-weight:700; font-family:'Rajdhani',sans-serif; letter-spacing:1px; color:white; }
+        .settings-section { padding:14px 16px; border-bottom:1px solid rgba(255,255,255,0.05); }
+        .settings-label { font-size:0.78rem; color:var(--muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px; font-family:'Rajdhani',sans-serif; }
+        .settings-row { display:flex; justify-content:space-between; align-items:center; padding:6px 0; }
+        .settings-row span { font-size:0.88rem; color:var(--text); font-family:'Rajdhani',sans-serif; }
+        .toggle { width:36px; height:20px; background:#2a2a3e; border-radius:10px; cursor:pointer; position:relative; transition:background 0.2s; }
+        .toggle.on { background:var(--primary); }
+        .toggle::after { content:''; position:absolute; width:14px; height:14px; background:white; border-radius:50%; top:3px; left:3px; transition:transform 0.2s; }
+        .toggle.on::after { transform:translateX(16px); }
+        .font-size-control { display:flex; align-items:center; gap:10px; }
+        .font-size-btn { background:#2a2a3e; border:none; color:white; width:26px; height:26px; border-radius:6px; font-size:1rem; cursor:pointer; display:flex;align-items:center;justify-content:center; }
+        .font-size-val { color:white; font-family:'JetBrains Mono',monospace; font-size:0.85rem; min-width:28px; text-align:center; }
+        .theme-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:8px; }
+        .theme-option { padding:6px; border-radius:8px; cursor:pointer; border:2px solid transparent; transition:all 0.15s; text-align:center; font-size:0.75rem; font-family:'Rajdhani',sans-serif; }
+        .theme-option.active { border-color:var(--primary); }
+
+        /* ===== NOTIFICATIONS ===== */
+        .notification { position:fixed; top:16px; left:50%; transform:translateX(-50%); background:var(--dark); border:1px solid var(--secondary); color:white; padding:10px 18px; border-radius:10px; z-index:99999; font-family:'Rajdhani',sans-serif; font-size:0.9rem; font-weight:600; animation:notifIn 0.3s ease; display:flex;align-items:center;gap:8px; box-shadow:0 8px 24px rgba(0,0,0,0.4); white-space:nowrap; }
+        @keyframes notifIn { from{transform:translate(-50%,-60px);opacity:0} to{transform:translate(-50%,0);opacity:1} }
+        .notification.error { border-color:var(--danger); }
+        .notification.warn { border-color:var(--accent); }
+
+        /* ===== INSTALL PROMPT ===== */
+        .install-prompt { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--dark); border:1px solid var(--primary); color:white; padding:12px 16px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.5); display:none; align-items:center; gap:10px; z-index:10001; max-width:90%; }
+        .install-prompt.show { display:flex; animation:slideUp 0.3s; }
+
+        /* ===== OVERLAY BACKDROP ===== */
+        .settings-backdrop { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:14999; display:none; }
+        .settings-backdrop.show { display:block; }
+
+        /* ===== SCROLLBARS ===== */
+        ::-webkit-scrollbar { width:5px; height:5px; }
+        ::-webkit-scrollbar-track { background:transparent; }
+        ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+
+        /* ===== SEARCH HIGHLIGHT ===== */
+        .cm-searching {
+            background: rgba(245, 158, 11, 0.35) !important;
+            border-bottom: 2px solid #f59e0b !important;
+            border-radius: 2px !important;
+        }
+        /* Current active match — brighter */
+        .search-match-active {
+            background: rgba(16, 185, 129, 0.45) !important;
+            border-bottom: 2px solid #10b981 !important;
+            border-radius: 2px !important;
+            box-shadow: 0 0 6px rgba(16,185,129,0.4) !important;
+        }
+        .search-info { min-width: 64px; }
+        .search-info.found  { color: #10b981; font-weight: 700; }
+        .search-info.notfound { color: #ef4444; font-weight: 700; }
+
+        @media (max-height:500px) {
+            .main-container { height:calc(100vh - 80px); }
+            .console-container.open { height:30vh; }
+        }
+
+        /* ===== CONTEXT MENU ===== */
+        /* ===== MINI SELECTION TOOLBAR ===== */
+        .sel-toolbar {
+            position: fixed;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            background: #1e1e32;
+            border: 1px solid rgba(124,58,237,0.6);
+            border-radius: 10px;
+            padding: 5px 7px;
+            z-index: 50000;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.7);
+            opacity: 0;
+            pointer-events: none;
+            transition: top 0.2s cubic-bezier(0.34,1.56,0.64,1), opacity 0.15s ease;
+        }
+        .sel-toolbar.show {
+            top: 56px; /* header کے نیچے، tab bar کے اوپر */
+            opacity: 1;
+            pointer-events: all;
+        }
+        .tb-btn {
+            width: 38px; height: 38px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: #c4b5fd;
+            font-size: 1rem;
+            display: flex; align-items:center; justify-content:center;
+            cursor: pointer;
+            transition: background 0.12s, color 0.12s, transform 0.1s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .tb-btn:hover  { background: rgba(124,58,237,0.25); color: white; }
+        .tb-btn:active { transform: scale(0.88); background: rgba(124,58,237,0.35); }
+        .tb-btn.danger       { color: #fca5a5; }
+        .tb-btn.danger:hover { background: rgba(239,68,68,0.2); color: #ef4444; }
+        .tb-divider { width:1px; height:22px; background:rgba(124,58,237,0.3); margin:0 3px; flex-shrink:0; }
+
+        /* ===== DELETE CONFIRM ===== */
+        .delete-confirm {
+            position: fixed; top: 0; left: 0; width:100%; height:100%;
+            background: rgba(0,0,0,0.65);
+            z-index: 60000;
+            display: none; align-items:center; justify-content:center;
+            backdrop-filter: blur(4px);
+        }
+        .delete-confirm.show { display: flex; }
+        .delete-box {
+            background: var(--dark);
+            border: 1px solid rgba(239,68,68,0.4);
+            border-radius: 16px;
+            padding: 24px 20px;
+            width: 90%; max-width: 340px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        .delete-box .del-icon { font-size: 2.5rem; margin-bottom: 12px; }
+        .delete-box h3 { font-family:'Rajdhani',sans-serif; font-size:1.15rem; font-weight:700; color:white; margin-bottom:8px; letter-spacing:1px; }
+        .delete-box p  { font-size:0.85rem; color:var(--muted); margin-bottom:20px; line-height:1.5; }
+        .delete-actions { display:flex; gap:10px; }
+        .del-cancel { flex:1; padding:10px; background:var(--card); border:1px solid #333; color:white; border-radius:8px; font-family:'Rajdhani',sans-serif; font-size:0.9rem; font-weight:600; cursor:pointer; transition:all 0.15s; }
+        .del-cancel:hover { border-color:var(--primary); }
+        .del-confirm { flex:1; padding:10px; background:linear-gradient(135deg,#ef4444,#dc2626); border:none; color:white; border-radius:8px; font-family:'Rajdhani',sans-serif; font-size:0.9rem; font-weight:700; cursor:pointer; transition:all 0.15s; letter-spacing:0.5px; }
+        .del-confirm:hover { box-shadow: 0 4px 20px rgba(239,68,68,0.4); }
+
+        /* Copy flash on editor selection */
+        .copy-flash {
+            position: fixed; pointer-events:none;
+            background: rgba(6,182,212,0.15);
+            border: 1px solid rgba(6,182,212,0.4);
+            border-radius: 4px;
+            z-index: 49999;
+            animation: flashFade 0.5s ease forwards;
+        }
+        @keyframes flashFade { from{opacity:1} to{opacity:0} }
+    </style>
+</head>
+<body>
+
+<!-- Splash Screen -->
+<div class="splash-screen" id="splashScreen">
+    <div class="splash-bg"></div>
+    <div class="splash-logo">⚡</div>
+    <h1 class="splash-title">CODE PLAYGROUND</h1>
+    <p class="splash-subtitle">PRO EDITION</p>
+    <div class="splash-loader">
+        <div class="splash-dot"></div>
+        <div class="splash-dot"></div>
+        <div class="splash-dot"></div>
+    </div>
+    <div class="splash-version">v2.0 PRO • Made with 🔥</div>
+</div>
+
+<!-- Main App -->
+<div class="app-container">
+
+    <!-- Header -->
+    <div class="header">
+        <span class="header-title">⚡ CP</span>
+        <button class="btn btn-run" id="btnRun" title="Run Code (Ctrl+Enter)">
+            <i class="fas fa-play"></i> Run
+        </button>
+        <button class="btn btn-console" id="btnConsole" title="Toggle Console">
+            <i class="fas fa-terminal"></i> Console
+        </button>
+        <button class="btn btn-format" id="btnFormat" title="Format Code">
+            <i class="fas fa-magic"></i> Format
+        </button>
+        <button class="btn btn-copy" id="btnCopy" title="Copy all or selected code">
+            <i class="fas fa-copy"></i> Copy
+        </button>
+        <button class="btn" id="btnDeleteAll" title="Delete all code" style="background:linear-gradient(135deg,#dc2626,#b91c1c);border-color:transparent;">
+            <i class="fas fa-trash-alt"></i> Delete
+        </button>
+        <button class="btn btn-save" id="btnSave" title="Save to LocalStorage">
+            <i class="fas fa-save"></i> Save
+        </button>
+        <button class="btn" id="btnSearch" title="Find & Replace (Ctrl+F)" style="background:linear-gradient(135deg,#0f766e,#0d9488);border-color:transparent;">
+            <i class="fas fa-search"></i>
+        </button>
+        <button class="btn" id="btnSnippets" title="Code Snippets" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);border-color:transparent;">
+            <i class="fas fa-code"></i> Snippets
+        </button>
+        <button class="btn btn-danger" id="btnClear" title="Clear Console">
+            <i class="fas fa-trash"></i>
+        </button>
+        <button class="btn" id="btnSettings" title="Settings" style="background:var(--card);">
+            <i class="fas fa-cog"></i>
+        </button>
+    </div>
+
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+        <button class="tab-item active" data-lang="html">
+            <i class="fab fa-html5" style="color:#e34c26"></i> HTML
+        </button>
+        <button class="tab-item" data-lang="css">
+            <i class="fab fa-css3-alt" style="color:#264de4"></i> CSS
+        </button>
+        <button class="tab-item" data-lang="js">
+            <i class="fab fa-js-square" style="color:#f0db4f"></i> JS
+        </button>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-bar" id="searchBar">
+        <i class="fas fa-search" style="color:var(--muted);font-size:0.8rem;flex-shrink:0;"></i>
+        <input type="text" class="search-input" id="searchInput" placeholder="Find... (type to jump instantly)">
+        <button class="console-btn" id="btnPrev" title="Previous match"><i class="fas fa-chevron-up"></i></button>
+        <button class="console-btn" id="btnNext" title="Next match"><i class="fas fa-chevron-down"></i></button>
+        <span class="search-info" id="searchInfo"></span>
+        <div style="width:1px;background:#333;height:20px;flex-shrink:0;"></div>
+        <input type="text" class="search-input" id="replaceInput" placeholder="Replace..." style="max-width:110px;">
+        <button class="console-btn" id="btnReplace" title="Replace current"><i class="fas fa-exchange-alt"></i></button>
+        <button class="console-btn" id="btnReplaceAll" title="Replace all">All</button>
+        <button class="console-btn" id="btnCloseSearch" title="Close (Esc)"><i class="fas fa-times"></i></button>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <div class="editor-container">
+            <textarea id="codeArea"></textarea>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-left">
+                <div class="status-item">
+                    <div class="status-dot" id="statusDot"></div>
+                    <span id="statusText">Ready</span>
+                </div>
+                <span id="statusLang">HTML</span>
+            </div>
+            <div class="status-right">
+                <span id="statusCursor">Ln 1, Col 1</span>
+                <span id="statusChars">0 chars</span>
+                <span id="statusLines">0 lines</span>
+            </div>
+        </div>
+
+        <!-- Console -->
+        <div class="console-container" id="consoleContainer">
+            <div class="console-header">
+                <h3><i class="fas fa-terminal"></i> CONSOLE</h3>
+                <div class="console-actions">
+                    <button class="console-btn" id="btnConsoleCopy" title="Copy output"><i class="fas fa-copy"></i></button>
+                    <button class="console-btn" id="btnClearConsole"><i class="fas fa-trash"></i> Clear</button>
+                    <button class="console-btn" id="closeConsole"><i class="fas fa-times"></i></button>
+                </div>
+            </div>
+            <div class="console-filter">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="log">Log</button>
+                <button class="filter-btn" data-filter="error">Error</button>
+                <button class="filter-btn" data-filter="warn">Warn</button>
+                <button class="filter-btn" data-filter="info">Info</button>
+            </div>
+            <div class="console-output" id="consoleOutput">
+                <div class="console-line info">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Console ready 🚀</span>
+                </div>
+            </div>
+            <div class="console-input-row">
+                <span style="color:var(--secondary);font-family:'JetBrains Mono',monospace;font-size:0.8rem;">></span>
+                <input type="text" class="console-input" id="consoleInput" placeholder="Run JS expression...">
+                <button class="console-run-btn" id="consoleRunBtn"><i class="fas fa-play"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Preview Modal -->
+<div class="preview-modal" id="previewModal">
+    <div class="preview-header">
+        <h2><i class="fas fa-eye"></i> Preview</h2>
+        <div class="preview-controls">
+            <button class="preview-size-btn" data-size="mobile" title="Mobile"><i class="fas fa-mobile-alt"></i></button>
+            <button class="preview-size-btn" data-size="tablet" title="Tablet"><i class="fas fa-tablet-alt"></i></button>
+            <button class="preview-size-btn active" data-size="desktop" title="Desktop"><i class="fas fa-desktop"></i></button>
+        </div>
+        <button class="btn btn-danger" id="btnClose" style="padding:6px 12px;">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="preview-wrapper">
+        <iframe class="preview-frame desktop" id="previewFrame" sandbox="allow-scripts allow-modals"></iframe>
+    </div>
+</div>
+
+<!-- Snippets Modal -->
+<div class="modal-overlay" id="snippetsModal">
+    <div class="modal">
+        <h3><i class="fas fa-code" style="color:var(--primary)"></i> Code Snippets</h3>
+        <div class="modal-body" id="snippetsList" style="max-height:60vh;overflow-y:auto;"></div>
+        <div class="modal-actions">
+            <button class="btn" id="closeSnippets" style="background:#333;border-color:#444;padding:8px 16px;">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Settings Panel -->
+<div class="settings-backdrop" id="settingsBackdrop"></div>
+<div class="settings-panel" id="settingsPanel">
+    <div class="settings-header">
+        <h3>⚙️ Settings</h3>
+        <button class="console-btn" id="closeSettings"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="settings-section">
+        <div class="settings-label">Editor</div>
+        <div class="settings-row">
+            <span>Font Size</span>
+            <div class="font-size-control">
+                <button class="font-size-btn" id="fontDecrease">−</button>
+                <span class="font-size-val" id="fontSizeVal">14</span>
+                <button class="font-size-btn" id="fontIncrease">+</button>
+            </div>
+        </div>
+        <div class="settings-row">
+            <span>Line Wrap</span>
+            <div class="toggle on" id="toggleWrap"></div>
+        </div>
+        <div class="settings-row">
+            <span>Line Numbers</span>
+            <div class="toggle on" id="toggleLines"></div>
+        </div>
+        <div class="settings-row">
+            <span>Auto Indent</span>
+            <div class="toggle on" id="toggleIndent"></div>
+        </div>
+        <div class="settings-row">
+            <span>Auto Brackets</span>
+            <div class="toggle on" id="toggleBrackets"></div>
+        </div>
+        <div class="settings-row">
+            <span>Auto Run</span>
+            <div class="toggle" id="toggleAutoRun"></div>
+        </div>
+    </div>
+    <div class="settings-section">
+        <div class="settings-label">Theme</div>
+        <div class="theme-grid">
+            <div class="theme-option active" data-theme="dracula" style="background:#282a36;color:#f8f8f2;">Dracula</div>
+            <div class="theme-option" data-theme="monokai" style="background:#272822;color:#f8f8f2;">Monokai</div>
+            <div class="theme-option" data-theme="material" style="background:#263238;color:#eeffff;">Material</div>
+        </div>
+    </div>
+    <div class="settings-section">
+        <div class="settings-label">Actions</div>
+        <button class="btn btn-danger" id="btnResetCode" style="width:100%;justify-content:center;margin-bottom:8px;">
+            <i class="fas fa-undo"></i> Reset to Default
+        </button>
+        <button class="btn btn-save" id="btnExport" style="width:100%;justify-content:center;">
+            <i class="fas fa-download"></i> Export HTML File
+        </button>
+    </div>
+</div>
+
+<!-- Install Prompt -->
+<div class="install-prompt" id="installPrompt">
+    <i class="fas fa-download" style="font-size:1.3rem;color:var(--primary)"></i>
+    <div style="flex:1">
+        <div style="font-weight:700;font-family:'Rajdhani',sans-serif">Install App</div>
+        <div style="font-size:0.78rem;opacity:0.7">Add to home screen</div>
+    </div>
+    <button class="btn btn-run" id="installBtn" style="padding:6px 12px;">Install</button>
+    <button class="btn" id="dismissInstall" style="padding:6px 10px;background:#333;border-color:#444;"><i class="fas fa-times"></i></button>
+</div>
+
+<!-- Mini Selection Toolbar (4 icons only) -->
+<div class="sel-toolbar" id="selToolbar">
+    <button class="tb-btn" id="tbSelectAll" title="Select All"><i class="fas fa-object-group"></i></button>
+    <div class="tb-divider"></div>
+    <button class="tb-btn" id="tbCut"    title="Cut Selected"><i class="fas fa-cut"></i></button>
+    <button class="tb-btn" id="tbCopy"   title="Copy Selected"><i class="fas fa-copy"></i></button>
+    <button class="tb-btn danger" id="tbDelete" title="Delete Selected"><i class="fas fa-eraser"></i></button>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="delete-confirm" id="deleteConfirm">
+    <div class="delete-box">
+        <div class="del-icon">🗑️</div>
+        <h3 id="deleteTitle">DELETE ALL CODE?</h3>
+        <p id="deleteMsg">اس tab کا پورا کوڈ ڈیلیٹ ہو جائے گا۔<br>کیا آپ واقعی یہ چاہتے ہیں؟</p>
+        <div class="delete-actions">
+            <button class="del-cancel" id="delCancel">Cancel</button>
+            <button class="del-confirm" id="delConfirm">🗑️ Delete</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ===== PWA SETUP =====
+// Service Worker register کرو
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js', { scope: './' })
+            .then(reg => {
+                console.log('✅ Service Worker registered:', reg.scope);
+                reg.addEventListener('updatefound', () => {
+                    const newWorker = reg.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            showNotification('🔄 Update available! Refresh to apply.');
+                        }
+                    });
+                });
+            })
+            .catch(err => console.warn('SW registration failed:', err));
+    });
+}
+
+// ===== SPLASH =====
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        const splash = document.getElementById('splashScreen');
+        if (splash) splash.style.display = 'none';
+    }, 3200);
+});
+
+// ===== DEFAULT CODE =====
+const defaultCode = {
+    html: `<!DOCTYPE html>
+<html>
+<head>
+    <title>Hello World</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Hello World! 👋</h1>
+        <p>Edit HTML, CSS & JS — then tap <strong>Run</strong></p>
+        <button id="btn">Click Me ✨</button>
+        <div id="output"></div>
+    </div>
+</body>
+</html>`,
+    css: `body {
+    font-family: sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+.container {
+    text-align: center;
+    background: rgba(255,255,255,0.1);
+    padding: 40px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+}
+h1 { font-size: 2.5rem; margin-bottom: 10px; }
+button {
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 14px 36px;
+    border-radius: 50px;
+    font-size: 1rem;
+    margin-top: 20px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+button:hover { transform: scale(1.05); }
+#output { margin-top: 16px; font-size: 1.2rem; }`,
+    js: `console.log('Hello! 👋');
+console.info('Code Playground Pro loaded!');
+
+document.getElementById('btn').onclick = function() {
+    document.getElementById('output').innerHTML = '<h3>Clicked! 🎉</h3>';
+    console.log('Button clicked!');
+    console.success('Nice one!');
+};`
+};
+
+// ===== STORAGE =====
+function loadSaved() {
+    try {
+        const saved = localStorage.getItem('cp_code');
+        return saved ? JSON.parse(saved) : { ...defaultCode };
+    } catch(e) { return { ...defaultCode }; }
+}
+
+const codeStorage = loadSaved();
+let currentLang = 'html';
+let fontSize = parseInt(localStorage.getItem('cp_fontSize') || '14');
+let autoRun = false;
+let autoRunTimer = null;
+let consoleFilter = 'all';
+let consoleHistory = [];
+let historyIndex = -1;
+
+// ===== EDITOR INIT =====
+const editor = CodeMirror.fromTextArea(document.getElementById('codeArea'), {
+    mode: 'htmlmixed',
+    theme: localStorage.getItem('cp_theme') || 'dracula',
+    lineNumbers: true,
+    lineWrapping: true,
+    indentUnit: 2,
+    tabSize: 2,
+    styleActiveLine: true,
+    matchBrackets: true,
+    autoCloseBrackets: true,
+    autoCloseTags: true,
+    foldGutter: true,
+    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
+    extraKeys: {
+        "Ctrl-Space": "autocomplete",
+        "Ctrl-Enter": () => runCode(),
+        "Ctrl-S": () => saveCode(),
+        "Ctrl-F": () => toggleSearch(),
+        "Ctrl-D": (cm) => duplicateLine(cm),
+        "Ctrl-/": (cm) => toggleComment(cm),
+        "Ctrl-Z": "undo",
+        "Ctrl-Y": "redo",
+        "Tab": (cm) => {
+            if (cm.somethingSelected()) cm.indentSelection("add");
+            else cm.replaceSelection("  ", "end");
+        }
+    },
+    hintOptions: { completeSingle: false, closeOnUnfocus: true, alignWithWord: true }
+});
+
+editor.setSize(null, null);
+document.querySelector('.CodeMirror').style.fontSize = fontSize + 'px';
+document.getElementById('fontSizeVal').textContent = fontSize;
+editor.setValue(codeStorage.html);
+
+// Update status bar
+editor.on('change', () => {
+    codeStorage[currentLang] = editor.getValue();
+    updateStatusBar();
+    if (autoRun) {
+        clearTimeout(autoRunTimer);
+        autoRunTimer = setTimeout(runCode, 1200);
+    }
+});
+
+editor.on('cursorActivity', () => {
+    const cursor = editor.getCursor();
+    document.getElementById('statusCursor').textContent = `Ln ${cursor.line+1}, Col ${cursor.ch+1}`;
+});
+
+function updateStatusBar() {
+    const val = editor.getValue();
+    document.getElementById('statusChars').textContent = val.length + ' chars';
+    document.getElementById('statusLines').textContent = editor.lineCount() + ' lines';
+    document.getElementById('statusLang').textContent = currentLang.toUpperCase();
+}
+
+// Auto-close tags
+editor.on('beforeChange', function(cm, change) {
+    if (change.origin === '+input' && change.text[0] === '>') {
+        const pos = change.from;
+        const line = cm.getLine(pos.line);
+        const before = line.substring(0, pos.ch);
+        const tagMatch = before.match(/<(\w+)(?:\s+[^>]*)?$/);
+        if (tagMatch) {
+            const tagName = tagMatch[1];
+            const selfClosing = ['img','br','hr','input','meta','link','area','base','col','embed','source','track','wbr'];
+            if (!selfClosing.includes(tagName.toLowerCase())) {
+                setTimeout(() => {
+                    const cur = cm.getCursor();
+                    cm.replaceRange('</' + tagName + '>', cur);
+                    cm.setCursor(cur);
+                }, 0);
+            }
+        }
+    }
+});
+
+// Autocomplete on type
+editor.on('inputRead', (cm, change) => {
+    if (!cm.state.completionActive && change.text[0] && /[a-zA-Z<.]/.test(change.text[0])) {
+        CodeMirror.commands.autocomplete(cm, null, { completeSingle: false });
+    }
+});
+
+// Tab switching
+document.querySelectorAll('.tab-item').forEach(tab => {
+    tab.addEventListener('click', () => {
+        codeStorage[currentLang] = editor.getValue();
+        document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentLang = tab.dataset.lang;
+        const modes = { html: 'htmlmixed', css: 'css', js: 'javascript' };
+        editor.setOption('mode', modes[currentLang]);
+        editor.setValue(codeStorage[currentLang]);
+        updateStatusBar();
+    });
+});
+
+// ===== RUN CODE =====
+function runCode() {
+    const html = codeStorage.html;
+    const css = codeStorage.css;
+    const js = codeStorage.js;
+
+    const output = document.getElementById('consoleOutput');
+    output.innerHTML = '<div class="console-line info"><i class="fas fa-play"></i><span>Running...</span><span class="console-timestamp">' + getTime() + '</span></div>';
+    document.getElementById('consoleContainer').classList.add('open');
+
+    const fullCode = `<!DOCTYPE html>
+<html><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>${css}</style>
+</head><body>${html}
+<script>
+window.onerror = function(msg,src,line,col,err) {
+    parent.postMessage({type:'error',args:['Error: '+msg+' (line '+line+')']}, '*');
+};
+const _log=console.log, _err=console.error, _warn=console.warn, _info=console.info;
+console.log = (...a) => { parent.postMessage({type:'log',args:a}, '*'); _log(...a); };
+console.error = (...a) => { parent.postMessage({type:'error',args:a}, '*'); _err(...a); };
+console.warn = (...a) => { parent.postMessage({type:'warn',args:a}, '*'); _warn(...a); };
+console.info = (...a) => { parent.postMessage({type:'info',args:a}, '*'); _info(...a); };
+console.success = (...a) => { parent.postMessage({type:'success',args:a}, '*'); };
+try { ${js} } catch(e) { parent.postMessage({type:'error',args:[e.toString()]}, '*'); }
+<\/script></body></html>`;
+
+    document.getElementById('previewFrame').srcdoc = fullCode;
+    document.getElementById('previewModal').classList.add('active');
+    document.getElementById('statusText').textContent = 'Running...';
+    setTimeout(() => document.getElementById('statusText').textContent = 'Ready', 1500);
+}
+
+window.addEventListener('message', event => {
+    if (event.data && event.data.type) {
+        addConsoleMessage(event.data.type, ...(event.data.args || [event.data.message || '']));
+    }
+});
+
+document.getElementById('btnRun').addEventListener('click', runCode);
+
+// ===== CONSOLE =====
+const consoleIcons = { log:'fa-chevron-right', error:'fa-times-circle', warn:'fa-exclamation-triangle', info:'fa-info-circle', success:'fa-check-circle' };
+
+function getTime() {
+    return new Date().toLocaleTimeString('en',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+
+function addConsoleMessage(type, ...args) {
+    const line = document.createElement('div');
+    line.className = `console-line ${type}`;
+    line.dataset.type = type;
+
+    const text = args.map(a => {
+        if (typeof a === 'object') {
+            try { return JSON.stringify(a, null, 2); }
+            catch(e) { return String(a); }
+        }
+        return String(a);
+    }).join(' ');
+
+    line.innerHTML = `<i class="fas ${consoleIcons[type] || 'fa-chevron-right'}"></i><span>${escapeHtml(text)}</span><span class="console-timestamp">${getTime()}</span>`;
+
+    const output = document.getElementById('consoleOutput');
+    output.appendChild(line);
+    applyFilter();
+    output.scrollTop = output.scrollHeight;
+}
+
+function escapeHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function applyFilter() {
+    document.querySelectorAll('.console-line').forEach(line => {
+        if (consoleFilter === 'all' || line.dataset.type === consoleFilter) {
+            line.style.display = '';
+        } else {
+            line.style.display = 'none';
+        }
+    });
+}
+
+document.getElementById('btnConsole').addEventListener('click', () => {
+    document.getElementById('consoleContainer').classList.toggle('open');
+});
+document.getElementById('closeConsole').addEventListener('click', () => {
+    document.getElementById('consoleContainer').classList.remove('open');
+});
+document.getElementById('btnClearConsole').addEventListener('click', () => {
+    document.getElementById('consoleOutput').innerHTML = '<div class="console-line info"><i class="fas fa-info-circle"></i><span>Cleared</span><span class="console-timestamp">'+getTime()+'</span></div>';
+});
+document.getElementById('btnClear').addEventListener('click', () => {
+    document.getElementById('btnClearConsole').click();
+});
+
+// Console filter buttons
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        consoleFilter = btn.dataset.filter;
+        applyFilter();
+    });
+});
+
+// Console copy output
+document.getElementById('btnConsoleCopy').addEventListener('click', () => {
+    const lines = document.querySelectorAll('#consoleOutput .console-line span:first-of-type');
+    const text = Array.from(lines).map(l => l.textContent).join('\n');
+    navigator.clipboard.writeText(text).then(() => showNotification('📋 Console copied!'));
+});
+
+// Console input (live JS eval)
+const consoleInput = document.getElementById('consoleInput');
+consoleInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        const val = consoleInput.value.trim();
+        if (!val) return;
+        consoleHistory.unshift(val);
+        historyIndex = -1;
+        addConsoleMessage('log', '> ' + val);
+        try {
+            const result = eval(val);
+            if (result !== undefined) addConsoleMessage('info', '← ' + String(result));
+        } catch(err) {
+            addConsoleMessage('error', err.toString());
+        }
+        consoleInput.value = '';
+    }
+    if (e.key === 'ArrowUp') {
+        historyIndex = Math.min(historyIndex + 1, consoleHistory.length - 1);
+        consoleInput.value = consoleHistory[historyIndex] || '';
+    }
+    if (e.key === 'ArrowDown') {
+        historyIndex = Math.max(historyIndex - 1, -1);
+        consoleInput.value = historyIndex >= 0 ? consoleHistory[historyIndex] : '';
+    }
+});
+document.getElementById('consoleRunBtn').addEventListener('click', () => {
+    consoleInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+});
+
+// ===== PREVIEW =====
+document.getElementById('btnClose').addEventListener('click', () => {
+    document.getElementById('previewModal').classList.remove('active');
+});
+
+document.querySelectorAll('.preview-size-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.preview-size-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const frame = document.getElementById('previewFrame');
+        frame.className = 'preview-frame ' + btn.dataset.size;
+    });
+});
+
+// ===== SEARCH / REPLACE — LIVE JUMP & HIGHLIGHT =====
+let searchMatches   = [];   // سب matches کی positions
+let searchCurrent   = -1;   // ابھی کون سا active ہے
+let searchMarkers   = [];   // CodeMirror text markers
+let activeMarker    = null; // current highlighted marker
+
+function clearSearchMarkers() {
+    searchMarkers.forEach(m => { try { m.clear(); } catch(e){} });
+    searchMarkers = [];
+    if (activeMarker) { try { activeMarker.clear(); } catch(e){} activeMarker = null; }
+}
+
+function buildMatches(query) {
+    clearSearchMarkers();
+    searchMatches = [];
+    if (!query) {
+        document.getElementById('searchInfo').textContent = '';
+        document.getElementById('searchInfo').className = 'search-info';
+        return;
+    }
+
+    const content  = editor.getValue();
+    const escaped  = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex    = new RegExp(escaped, 'gi');
+    let match;
+
+    // سب matches ڈھونڈو اور mark کرو (پیلا رنگ)
+    while ((match = regex.exec(content)) !== null) {
+        const from = editor.posFromIndex(match.index);
+        const to   = editor.posFromIndex(match.index + match[0].length);
+        searchMatches.push({ from, to });
+
+        const marker = editor.markText(from, to, {
+            className: 'cm-searching',
+            title: 'match'
+        });
+        searchMarkers.push(marker);
+    }
+
+    const info = document.getElementById('searchInfo');
+    if (searchMatches.length === 0) {
+        info.textContent = '0 found';
+        info.className   = 'search-info notfound';
+    } else {
+        info.className = 'search-info found';
+    }
+}
+
+function highlightCurrent() {
+    // پہلے پرانا active marker ہٹاؤ
+    if (activeMarker) { try { activeMarker.clear(); } catch(e){} activeMarker = null; }
+    if (searchMatches.length === 0) return;
+
+    const { from, to } = searchMatches[searchCurrent];
+
+    // سبز active marker لگاؤ
+    activeMarker = editor.markText(from, to, {
+        className: 'search-match-active',
+        title: 'current'
+    });
+
+    // صرف scroll کرو — cursor یا selection نہ ہلاؤ
+    editor.scrollIntoView({ from, to }, 120);
+
+    // search input کا focus واپس دو تاکہ typing جاری رہے
+    document.getElementById('searchInput').focus();
+
+    // counter update کرو
+    const info = document.getElementById('searchInfo');
+    info.textContent = `${searchCurrent + 1} / ${searchMatches.length}`;
+    info.className = 'search-info found';
+}
+
+function searchNext() {
+    if (searchMatches.length === 0) return;
+    searchCurrent = (searchCurrent + 1) % searchMatches.length;
+    highlightCurrent();
+}
+
+function searchPrev() {
+    if (searchMatches.length === 0) return;
+    searchCurrent = (searchCurrent - 1 + searchMatches.length) % searchMatches.length;
+    highlightCurrent();
+}
+
+function toggleSearch() {
+    const bar = document.getElementById('searchBar');
+    bar.classList.toggle('show');
+    if (bar.classList.contains('show')) {
+        document.getElementById('searchInput').focus();
+        document.getElementById('searchInput').select();
+    } else {
+        clearSearchMarkers();
+        searchMatches = [];
+        searchCurrent = -1;
+        document.getElementById('searchInfo').textContent = '';
+    }
+}
+
+// Live search — ہر حرف type ہونے پر
+document.getElementById('searchInput').addEventListener('input', function() {
+    const query = this.value.trim();
+    buildMatches(query);
+    if (searchMatches.length > 0) {
+        searchCurrent = 0;
+        highlightCurrent();
+    } else {
+        searchCurrent = -1;
+    }
+});
+
+// Enter = اگلا match
+document.getElementById('searchInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        if (e.shiftKey) searchPrev(); else searchNext();
+    }
+    if (e.key === 'Escape') {
+        toggleSearch();
+    }
+});
+
+document.getElementById('btnNext').addEventListener('click', searchNext);
+document.getElementById('btnPrev').addEventListener('click', searchPrev);
+
+document.getElementById('btnSearch').addEventListener('click', toggleSearch);
+document.getElementById('btnCloseSearch').addEventListener('click', () => {
+    document.getElementById('searchBar').classList.remove('show');
+    clearSearchMarkers();
+    searchMatches = [];
+    searchCurrent = -1;
+    document.getElementById('searchInfo').textContent = '';
+});
+
+// Replace current match
+document.getElementById('btnReplace').addEventListener('click', () => {
+    const search  = document.getElementById('searchInput').value;
+    const replace = document.getElementById('replaceInput').value;
+    if (!search || searchMatches.length === 0) return;
+    const { from, to } = searchMatches[searchCurrent];
+    editor.replaceRange(replace, from, to);
+    // دوبارہ search کرو updated content میں
+    buildMatches(search);
+    if (searchMatches.length > 0) {
+        searchCurrent = Math.min(searchCurrent, searchMatches.length - 1);
+        highlightCurrent();
+    }
+    showNotification('✅ Replaced 1 occurrence');
+});
+
+// Replace all
+document.getElementById('btnReplaceAll').addEventListener('click', () => {
+    const search  = document.getElementById('searchInput').value;
+    const replace = document.getElementById('replaceInput').value;
+    if (!search) return;
+    const count   = searchMatches.length;
+    if (count === 0) { showNotification('⚠️ Nothing to replace', 'warn'); return; }
+    const escaped = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    editor.setValue(editor.getValue().replace(new RegExp(escaped, 'g'), replace));
+    clearSearchMarkers();
+    searchMatches  = [];
+    searchCurrent  = -1;
+    document.getElementById('searchInfo').textContent = '';
+    showNotification(`✅ Replaced ${count} occurrences`);
+});
+
+// ===== FORMAT CODE =====
+function formatCode() {
+    let val = editor.getValue();
+    try {
+        if (currentLang === 'js') {
+            // Basic JS formatter
+            val = val.replace(/\{(?!\s)/g, '{\n  ').replace(/\}(?!\s)/g, '\n}').replace(/;\s*/g, ';\n');
+        } else if (currentLang === 'css') {
+            val = val.replace(/\{/g, ' {\n    ').replace(/;(?!\s)/g, ';\n    ').replace(/\}/g, '\n}\n');
+        }
+        editor.setValue(val);
+        showNotification('✨ Code formatted!');
+    } catch(e) {
+        showNotification('❌ Format failed', 'error');
+    }
+}
+document.getElementById('btnFormat').addEventListener('click', formatCode);
+
+// ===== SMART COPY (selected یا پورا) =====
+function smartCopy() {
+    const selected = editor.getSelection();
+    const textToCopy = selected.length > 0 ? selected : editor.getValue();
+    const label = selected.length > 0 ? `📋 Copied ${selected.length} chars!` : '📋 All code copied!';
+    navigator.clipboard.writeText(textToCopy)
+        .then(() => showNotification(label))
+        .catch(() => showNotification('❌ Copy failed', 'error'));
+}
+document.getElementById('btnCopy').addEventListener('click', smartCopy);
+
+// ===== DELETE ALL with confirm =====
+let deleteMode = 'all'; // 'all' or 'selected'
+
+function showDeleteConfirm(mode) {
+    deleteMode = mode;
+    const title = document.getElementById('deleteTitle');
+    const msg = document.getElementById('deleteMsg');
+    if (mode === 'selected') {
+        const sel = editor.getSelection();
+        if (!sel) { showNotification('⚠️ کچھ select نہیں!', 'warn'); return; }
+        title.textContent = 'DELETE SELECTED?';
+        msg.innerHTML = `${sel.length} characters ڈیلیٹ ہوں گے۔<br>کیا آپ واقعی یہ چاہتے ہیں؟`;
+    } else {
+        title.textContent = 'DELETE ALL CODE?';
+        msg.innerHTML = `اس tab کا پورا کوڈ ڈیلیٹ ہو جائے گا۔<br>کیا آپ واقعی یہ چاہتے ہیں؟`;
+    }
+    document.getElementById('deleteConfirm').classList.add('show');
+}
+
+document.getElementById('btnDeleteAll').addEventListener('click', () => showDeleteConfirm('all'));
+
+document.getElementById('delCancel').addEventListener('click', () => {
+    document.getElementById('deleteConfirm').classList.remove('show');
+});
+
+document.getElementById('delConfirm').addEventListener('click', () => {
+    if (deleteMode === 'selected') {
+        editor.replaceSelection('');
+        showNotification('🗑️ Selection deleted!');
+    } else {
+        editor.setValue('');
+        codeStorage[currentLang] = '';
+        showNotification('🗑️ All code deleted!');
+    }
+    document.getElementById('deleteConfirm').classList.remove('show');
+    updateStatusBar();
+});
+
+document.getElementById('deleteConfirm').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('deleteConfirm')) {
+        document.getElementById('deleteConfirm').classList.remove('show');
+    }
+});
+
+// ===== MINI SELECTION TOOLBAR =====
+const selToolbar = document.getElementById('selToolbar');
+
+function showSelToolbar() {
+    // header کی actual height لو تاکہ toolbar بالکل نیچے آئے
+    const headerH = document.querySelector('.header').offsetHeight;
+    selToolbar.style.top = (headerH + 4) + 'px';
+    selToolbar.classList.add('show');
+}
+
+function hideSelToolbar() {
+    selToolbar.classList.remove('show');
+}
+
+// ایک ہی event — فوری، ایک حرف select ہو تو بھی toolbar آئے
+editor.on('cursorActivity', () => {
+    const sel = editor.getSelection();
+    if (sel && sel.length > 0) {
+        showSelToolbar();
+    } else {
+        hideSelToolbar();
+    }
+});
+
+// toolbar کے باہر کلک ہو تو چھپاؤ
+document.addEventListener('mousedown', (e) => {
+    if (!selToolbar.contains(e.target)) hideSelToolbar();
+});
+document.addEventListener('touchstart', (e) => {
+    if (!selToolbar.contains(e.target)) hideSelToolbar();
+}, { passive: true });
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') hideSelToolbar();
+});
+
+// ===== TOOLBAR BUTTONS =====
+document.getElementById('tbSelectAll').addEventListener('click', () => {
+    const lastLine = editor.lastLine();
+    const lastCh   = editor.getLine(lastLine).length;
+    editor.setSelection({ line: 0, ch: 0 }, { line: lastLine, ch: lastCh });
+    editor.focus();
+    showSelToolbar();
+    showNotification('✅ All selected!');
+});
+
+document.getElementById('tbCut').addEventListener('click', () => {
+    const sel = editor.getSelection();
+    if (!sel) return;
+    navigator.clipboard.writeText(sel).then(() => {
+        editor.replaceSelection('');
+        showNotification(`✂️ Cut ${sel.length} chars!`);
+    });
+    hideSelToolbar();
+});
+
+document.getElementById('tbCopy').addEventListener('click', () => {
+    const sel = editor.getSelection();
+    if (!sel) return;
+    navigator.clipboard.writeText(sel).then(() => {
+        showNotification(`📋 Copied ${sel.length} chars!`);
+    });
+    hideSelToolbar();
+});
+
+document.getElementById('tbDelete').addEventListener('click', () => {
+    hideSelToolbar();
+    showDeleteConfirm('selected');
+});
+
+// ===== SAVE =====
+function saveCode() {
+    codeStorage[currentLang] = editor.getValue();
+    try {
+        localStorage.setItem('cp_code', JSON.stringify(codeStorage));
+        document.getElementById('statusDot').style.background = 'var(--secondary)';
+        showNotification('💾 Saved!');
+        setTimeout(() => document.getElementById('statusDot').style.background = '', 2000);
+    } catch(e) {
+        showNotification('❌ Save failed', 'error');
+    }
+}
+document.getElementById('btnSave').addEventListener('click', saveCode);
+
+// ===== DUPLICATE LINE =====
+function duplicateLine(cm) {
+    const cursor = cm.getCursor();
+    const line = cm.getLine(cursor.line);
+    cm.replaceRange('\n' + line, { line: cursor.line, ch: line.length });
+    cm.setCursor({ line: cursor.line + 1, ch: cursor.ch });
+}
+
+// ===== TOGGLE COMMENT =====
+function toggleComment(cm) {
+    const cursor = cm.getCursor();
+    const line = cm.getLine(cursor.line);
+    const trimmed = line.trimStart();
+    const spaces = line.length - trimmed.length;
+    const indent = line.substring(0, spaces);
+    let newLine;
+    if (currentLang === 'html') {
+        newLine = trimmed.startsWith('<!--') ? indent + trimmed.replace(/^<!--\s?/, '').replace(/\s?-->$/, '') : indent + '<!-- ' + trimmed + ' -->';
+    } else if (currentLang === 'css') {
+        newLine = trimmed.startsWith('/*') ? indent + trimmed.replace(/^\/\*\s?/, '').replace(/\s?\*\/$/, '') : indent + '/* ' + trimmed + ' */';
+    } else {
+        newLine = trimmed.startsWith('//') ? indent + trimmed.replace(/^\/\/\s?/, '') : indent + '// ' + trimmed;
+    }
+    cm.replaceRange(newLine, { line: cursor.line, ch: 0 }, { line: cursor.line, ch: line.length });
+}
+
+// ===== SNIPPETS =====
+const snippets = {
+    html: [
+        { title: 'HTML5 Boilerplate', desc: 'Complete starter template', tag: 'HTML', code: `<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>Document</title>\n    <link rel="stylesheet" href="style.css">\n</head>\n<body>\n    \n    <script src="script.js"><\/script>\n</body>\n</html>` },
+        { title: 'Flexbox Container', desc: 'Centered flex layout', tag: 'HTML', code: `<div style="display:flex;align-items:center;justify-content:center;height:100vh;">\n    <div>Centered Content</div>\n</div>` },
+        { title: 'Form', desc: 'Basic input form', tag: 'HTML', code: `<form>\n    <input type="text" placeholder="Name">\n    <input type="email" placeholder="Email">\n    <button type="submit">Submit</button>\n</form>` },
+        { title: 'Navigation', desc: 'Simple nav bar', tag: 'HTML', code: `<nav>\n    <a href="#">Home</a>\n    <a href="#">About</a>\n    <a href="#">Contact</a>\n</nav>` }
+    ],
+    css: [
+        { title: 'CSS Reset', desc: 'Universal reset styles', tag: 'CSS', code: `* {\n    margin: 0;\n    padding: 0;\n    box-sizing: border-box;\n}` },
+        { title: 'Glassmorphism', desc: 'Glass card effect', tag: 'CSS', code: `.glass {\n    background: rgba(255,255,255,0.1);\n    backdrop-filter: blur(10px);\n    border: 1px solid rgba(255,255,255,0.2);\n    border-radius: 16px;\n    padding: 20px;\n}` },
+        { title: 'CSS Variables', desc: 'Color theme variables', tag: 'CSS', code: `:root {\n    --primary: #7c3aed;\n    --secondary: #10b981;\n    --dark: #1e1e2e;\n    --text: #e2e8f0;\n}` },
+        { title: 'Hover Button', desc: 'Animated button style', tag: 'CSS', code: `.btn {\n    background: #7c3aed;\n    color: white;\n    border: none;\n    padding: 12px 28px;\n    border-radius: 8px;\n    cursor: pointer;\n    transition: all 0.3s;\n}\n.btn:hover {\n    transform: translateY(-2px);\n    box-shadow: 0 8px 24px rgba(124,58,237,0.4);\n}` }
+    ],
+    js: [
+        { title: 'Fetch API', desc: 'HTTP GET request', tag: 'JS', code: `fetch('https://api.example.com/data')\n    .then(res => res.json())\n    .then(data => console.log(data))\n    .catch(err => console.error(err));` },
+        { title: 'LocalStorage', desc: 'Save and load data', tag: 'JS', code: `// Save\nlocalStorage.setItem('key', JSON.stringify(data));\n\n// Load\nconst data = JSON.parse(localStorage.getItem('key') || 'null');` },
+        { title: 'Event Listener', desc: 'Click event handler', tag: 'JS', code: `document.getElementById('btn').addEventListener('click', function(e) {\n    e.preventDefault();\n    console.log('Clicked!');\n});` },
+        { title: 'Async/Await', desc: 'Async function template', tag: 'JS', code: `async function getData() {\n    try {\n        const res = await fetch('https://api.example.com');\n        const data = await res.json();\n        return data;\n    } catch(err) {\n        console.error('Error:', err);\n    }\n}\n\ngetData().then(data => console.log(data));` }
+    ]
+};
+
+function renderSnippets() {
+    const list = document.getElementById('snippetsList');
+    const items = snippets[currentLang] || snippets.html;
+    list.innerHTML = items.map((s, i) => `
+        <div class="snippet-item" onclick="insertSnippet(${i})">
+            <div class="snippet-title"><span class="snippet-tag">${s.tag}</span> ${s.title}</div>
+            <div class="snippet-desc">${s.desc}</div>
+        </div>
+    `).join('');
+}
+
+window.insertSnippet = function(i) {
+    const items = snippets[currentLang] || snippets.html;
+    editor.setValue(items[i].code);
+    document.getElementById('snippetsModal').classList.remove('show');
+    showNotification('✅ Snippet inserted!');
+};
+
+document.getElementById('btnSnippets').addEventListener('click', () => {
+    renderSnippets();
+    document.getElementById('snippetsModal').classList.add('show');
+});
+document.getElementById('closeSnippets').addEventListener('click', () => {
+    document.getElementById('snippetsModal').classList.remove('show');
+});
+document.getElementById('snippetsModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('snippetsModal')) document.getElementById('snippetsModal').classList.remove('show');
+});
+
+// ===== SETTINGS =====
+document.getElementById('btnSettings').addEventListener('click', () => {
+    document.getElementById('settingsPanel').classList.add('open');
+    document.getElementById('settingsBackdrop').classList.add('show');
+});
+document.getElementById('closeSettings').addEventListener('click', closeSettings);
+document.getElementById('settingsBackdrop').addEventListener('click', closeSettings);
+function closeSettings() {
+    document.getElementById('settingsPanel').classList.remove('open');
+    document.getElementById('settingsBackdrop').classList.remove('show');
+}
+
+// Font size
+document.getElementById('fontIncrease').addEventListener('click', () => {
+    fontSize = Math.min(fontSize + 1, 24);
+    document.querySelector('.CodeMirror').style.fontSize = fontSize + 'px';
+    document.getElementById('fontSizeVal').textContent = fontSize;
+    localStorage.setItem('cp_fontSize', fontSize);
+    editor.refresh();
+});
+document.getElementById('fontDecrease').addEventListener('click', () => {
+    fontSize = Math.max(fontSize - 1, 10);
+    document.querySelector('.CodeMirror').style.fontSize = fontSize + 'px';
+    document.getElementById('fontSizeVal').textContent = fontSize;
+    localStorage.setItem('cp_fontSize', fontSize);
+    editor.refresh();
+});
+
+// Toggles
+function makeToggle(id, option, key) {
+    const el = document.getElementById(id);
+    const saved = localStorage.getItem('cp_' + key);
+    const isOn = saved !== null ? saved === 'true' : el.classList.contains('on');
+    if (!isOn) el.classList.remove('on');
+    el.addEventListener('click', () => {
+        el.classList.toggle('on');
+        const val = el.classList.contains('on');
+        localStorage.setItem('cp_' + key, val);
+        if (option) editor.setOption(option, val);
+        if (id === 'toggleAutoRun') autoRun = val;
+    });
+}
+makeToggle('toggleWrap', 'lineWrapping', 'wrap');
+makeToggle('toggleLines', 'lineNumbers', 'lines');
+makeToggle('toggleIndent', 'smartIndent', 'indent');
+makeToggle('toggleBrackets', 'autoCloseBrackets', 'brackets');
+makeToggle('toggleAutoRun', null, 'autorun');
+
+// Themes
+document.querySelectorAll('.theme-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+        document.querySelectorAll('.theme-option').forEach(o => o.classList.remove('active'));
+        opt.classList.add('active');
+        editor.setOption('theme', opt.dataset.theme);
+        localStorage.setItem('cp_theme', opt.dataset.theme);
+        showNotification('🎨 Theme changed!');
+    });
+});
+
+// Reset code
+document.getElementById('btnResetCode').addEventListener('click', () => {
+    if (confirm('Reset to default code?')) {
+        Object.assign(codeStorage, JSON.parse(JSON.stringify(defaultCode)));
+        editor.setValue(codeStorage[currentLang]);
+        localStorage.removeItem('cp_code');
+        showNotification('♻️ Reset done!');
+    }
+});
+
+// Export HTML
+document.getElementById('btnExport').addEventListener('click', () => {
+    const full = `<!DOCTYPE html>\n<html><head>\n<meta charset="UTF-8">\n<style>${codeStorage.css}</style>\n</head>\n<body>${codeStorage.html}\n<script>${codeStorage.js}<\/script>\n</body></html>`;
+    const blob = new Blob([full], { type: 'text/html' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'code-playground-export.html';
+    a.click();
+    showNotification('📥 Exported!');
+});
+
+// ===== NOTIFICATIONS =====
+function showNotification(msg, type = 'success') {
+    const existing = document.querySelector('.notification');
+    if (existing) existing.remove();
+    const notif = document.createElement('div');
+    notif.className = 'notification' + (type !== 'success' ? ' ' + type : '');
+    notif.innerHTML = `<span>${msg}</span>`;
+    document.body.appendChild(notif);
+    setTimeout(() => { notif.style.animation = 'none'; notif.style.opacity = '0'; notif.style.transition = 'opacity 0.3s'; setTimeout(() => notif.remove(), 300); }, 2500);
+}
+
+// ===== PWA INSTALL =====
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('installPrompt').classList.add('show');
+});
+document.getElementById('installBtn').addEventListener('click', async () => {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') showNotification('🎉 App installed!');
+        deferredPrompt = null;
+        document.getElementById('installPrompt').classList.remove('show');
+    }
+});
+document.getElementById('dismissInstall').addEventListener('click', () => {
+    document.getElementById('installPrompt').classList.remove('show');
+});
+
+// ===== WELCOME MESSAGE =====
+setTimeout(() => {
+    addConsoleMessage('info', '⚡ Code Playground PRO ready!');
+    addConsoleMessage('log', 'Shortcuts: Ctrl+Enter=Run | Ctrl+S=Save | Ctrl+F=Search | Ctrl+/=Comment | Ctrl+D=Duplicate');
+    updateStatusBar();
+}, 500);
+
+// Keyboard shortcut: Ctrl+Enter
+document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); runCode(); }
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveCode(); }
+    if ((e.ctrlKey || e.metaKey) && e.key === 'f') { e.preventDefault(); toggleSearch(); }
+});
+</script>
+</body>
+</html>
